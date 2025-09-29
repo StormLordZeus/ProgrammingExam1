@@ -62,6 +62,7 @@ public class ChessGame {
         Iterator<ChessMove> movesIterator = myMoves.iterator();
         while (movesIterator.hasNext())
         {
+            System.out.println("Entering Iterator Loop");
             ChessMove move = movesIterator.next();
 
             ChessPosition startPos = move.getStartPosition();
@@ -69,14 +70,14 @@ public class ChessGame {
             ChessPiece enemyPiece = m_board.getPiece(endPos);
             m_board.addPiece(endPos, myPiece);
             m_board.addPiece(startPos, null);
-            if(isInCheck(m_teamTurn))
+            if(isInCheck(myPiece.getTeamColor()))
             {
                 movesIterator.remove();
             }
             m_board.addPiece(endPos, enemyPiece);
             m_board.addPiece(startPos, myPiece);
         }
-
+        System.out.println(myMoves);
         return myMoves;
     }
 
@@ -187,6 +188,10 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor)
     {
+        if (isInCheck(teamColor))
+        {
+            return false;
+        }
         throw new RuntimeException("Not implemented");
     }
 
