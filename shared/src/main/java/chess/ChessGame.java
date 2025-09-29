@@ -12,6 +12,10 @@ public class ChessGame {
 
     private TeamColor m_teamTurn;
     private ChessBoard m_board;
+    private boolean m_blackCastleLeft;
+    private boolean m_blackCastleRight;
+    private boolean m_whiteCastleLeft;
+    private boolean m_whiteCastleRight;
 
     public ChessGame() {
         m_teamTurn = TeamColor.WHITE;
@@ -35,6 +39,38 @@ public class ChessGame {
     public void setTeamTurn(TeamColor team)
     {
         m_teamTurn = team;
+    }
+
+    public boolean get_blackCastleLeft() {
+        return m_blackCastleLeft;
+    }
+
+    public void set_blackCastleLeft(boolean blackCastleLeft) {
+        m_blackCastleLeft = blackCastleLeft;
+    }
+
+    public boolean get_blackCastleRight() {
+        return m_blackCastleRight;
+    }
+
+    public void set_blackCastleRight(boolean blackCastleRight) {
+        m_blackCastleRight = blackCastleRight;
+    }
+
+    public boolean get_whiteCastleLeft() {
+        return m_whiteCastleLeft;
+    }
+
+    public void set_whiteCastleLeft(boolean whiteCastleLeft) {
+        this.m_whiteCastleLeft = whiteCastleLeft;
+    }
+
+    public boolean get_whiteCastleRight() {
+        return m_whiteCastleRight;
+    }
+
+    public void set_whiteCastleRight(boolean whiteCastleRight) {
+        this.m_whiteCastleRight = whiteCastleRight;
     }
 
     /**
@@ -77,7 +113,6 @@ public class ChessGame {
             m_board.addPiece(startPos, myPiece);
         }
 
-        System.out.println("My piece is a king" + myMoves);
         return myMoves;
     }
 
@@ -158,10 +193,6 @@ public class ChessGame {
                 ChessPiece myPiece = m_board.getPiece(new ChessPosition(y,x));
                 if (myPiece != null && myPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> pieceMoves = myPiece.pieceMoves(m_board, new ChessPosition(y, x));
-                    if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN)
-                    {
-                        System.out.println(pieceMoves);
-                    }
                     for (ChessMove move : pieceMoves) {
                         if (move.getEndPosition().equals(kingPos)) {
                             return true;
