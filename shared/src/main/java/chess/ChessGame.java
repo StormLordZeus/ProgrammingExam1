@@ -76,7 +76,8 @@ public class ChessGame {
             m_board.addPiece(endPos, enemyPiece);
             m_board.addPiece(startPos, myPiece);
         }
-        System.out.println(myMoves);
+
+        System.out.println("My piece is a king" + myMoves);
         return myMoves;
     }
 
@@ -175,7 +176,25 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor)
     {
-        throw new RuntimeException("Not implemented");
+        if (teamColor != m_teamTurn || !isInCheck(teamColor))
+        {
+            return false;
+        }
+        for (int y = 1; y < 9; y ++) {
+            for (int x = 1; x < 9; x++)
+            {
+                ChessPiece myPiece = m_board.getPiece(new ChessPosition(y,x));
+                if (myPiece != null && myPiece.getTeamColor() == teamColor) {
+                    if (!this.validMoves(new ChessPosition(y,x)).isEmpty())
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+
+        return true;
     }
 
     /**
@@ -193,8 +212,6 @@ public class ChessGame {
         }
         else
         {
-            boolean isStalemated = true;
-
             for (int y = 1; y < 9; y ++) {
                 for (int x = 1; x < 9; x++)
                 {
