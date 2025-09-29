@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -61,21 +59,24 @@ public class ChessGame {
             return null;
         }
         Collection<ChessMove> myMoves = myPiece.pieceMoves(m_board, startPosition);
-        if (isInCheck(m_teamTurn))
+        Iterator<ChessMove> movesIterator = myMoves.iterator();
+        while (movesIterator.hasNext())
         {
-            for (ChessMove move : myMoves)
+            ChessMove move = movesIterator.next();
+
+            ChessPosition startPos = move.getStartPosition();
+            ChessPosition endPos = move.getEndPosition();
+            ChessPiece enemyPiece = m_board.getPiece(endPos);
+            m_board.addPiece(endPos, myPiece);
+            m_board.addPiece(startPos, null);
+            if(isInCheck(m_teamTurn))
             {
-                ChessPosition endPos = move.getEndPosition();
-                ChessPiece enemyPiece = m_board.getPiece(endPos);
-                m_board.addPiece(endPos, myPiece);
-                if(isInCheck(m_teamTurn))
-                {
-                    myMoves.remove(move);
-                }
-                m_board.addPiece(endPos, enemyPiece);
-                m_board.addPiece(move.getStartPosition(), myPiece);
+                movesIterator.remove();
             }
+            m_board.addPiece(endPos, enemyPiece);
+            m_board.addPiece(startPos, myPiece);
         }
+
         return myMoves;
     }
 
@@ -89,7 +90,8 @@ public class ChessGame {
     {
         ChessPosition start_pos = move.getStartPosition();
         ChessPiece myPiece = m_board.getPiece(start_pos);
-        if (myPiece != null) {
+        if (myPiece != null)
+        {
             TeamColor myColor = myPiece.getTeamColor();
             if (this.validMoves(start_pos).contains(move) && myColor == m_teamTurn) {
                 if (move.getPromotionPiece() != null)
@@ -112,6 +114,10 @@ public class ChessGame {
             } else {
                 throw new InvalidMoveException();
             }
+        }
+        else
+        {
+            throw new InvalidMoveException();
         }
     }
 
@@ -202,5 +208,19 @@ public class ChessGame {
     public ChessBoard getBoard()
     {
         return m_board;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return m_teamTurn == chessGame.m_teamTurn && Objects.equals(m_board, chessGame.m_board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_teamTurn, m_board);
     }
 }
