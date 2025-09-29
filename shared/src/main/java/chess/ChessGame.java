@@ -158,8 +158,14 @@ public class ChessGame {
                 ChessPiece myPiece = m_board.getPiece(new ChessPosition(y,x));
                 if (myPiece != null && myPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> pieceMoves = myPiece.pieceMoves(m_board, new ChessPosition(y, x));
-                    if (pieceMoves.contains(new ChessMove(new ChessPosition(y, x), kingPos, null))) {
-                        return true;
+                    if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN)
+                    {
+                        System.out.println(pieceMoves);
+                    }
+                    for (ChessMove move : pieceMoves) {
+                        if (move.getEndPosition().equals(kingPos)) {
+                            return true;
+                        }
                     }
                 }
             }
