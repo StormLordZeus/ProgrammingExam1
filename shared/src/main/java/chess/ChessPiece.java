@@ -1,6 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -10,7 +13,13 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    private final ChessGame.TeamColor m_color;
+    private final ChessPiece.PieceType m_type;
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type)
+    {
+        m_type = type;
+        m_color = pieceColor;
     }
 
     /**
@@ -28,15 +37,17 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+    public ChessGame.TeamColor getTeamColor()
+    {
+        return m_color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
-    public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+    public PieceType getPieceType()
+    {
+        return m_type;
     }
 
     /**
@@ -46,7 +57,234 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
+    {
+        List<ChessMove> myMoves = new ArrayList<>();
+        ChessPiece piece1 = board.getPiece(myPosition);
+        ChessGame.TeamColor myColor = piece1.getTeamColor();
+        PieceType myType = piece1.getPieceType();
+
+        if (myType == PieceType.BISHOP)
+        {
+            int[][] bishopDirections = { {1,1},{1,-1},{-1,1},{-1,-1} };
+            for (int i = 0; i < bishopDirections.length; i++)
+            {
+                int y = myPosition.getRow() + bishopDirections[i][0];
+                int x = myPosition.getColumn() + bishopDirections[i][1];
+                while (x <= 8 && x >= 1 && y <= 8 && y >= 1)
+                {
+                    ChessPiece piece2 = board.getPiece(new ChessPosition(y,x));
+
+                    if (piece2 != null)
+                    {
+                        if (piece2.getTeamColor() != myColor)
+                        {
+                            myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                    }
+                    y += bishopDirections[i][0];
+                    x += bishopDirections[i][1];
+                }
+            }
+        }
+
+        if (myType == PieceType.KING)
+        {
+            int[][] kingDirections = { {1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1} };
+            for (int i = 0; i < kingDirections.length; i++)
+            {
+                int y = myPosition.getRow() + kingDirections[i][0];
+                int x = myPosition.getColumn() + kingDirections[i][1];
+                if (x <= 8 && x >= 1 && y <= 8 && y >= 1)
+                {
+                    ChessPiece piece2 = board.getPiece(new ChessPosition(y,x));
+
+                    if (piece2 != null)
+                    {
+                        if (piece2.getTeamColor() != myColor)
+                        {
+                            myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                        }
+                    }
+                    else
+                    {
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                    }
+                }
+            }
+        }
+
+        if (myType == PieceType.KNIGHT)
+        {
+            int[][] knightDirections = { {2,1},{2,-1},{-1,2},{1,2},{-2,1},{-2,-1},{-1,-2},{1,-2} };
+            for (int i = 0; i < knightDirections.length; i++)
+            {
+                int y = myPosition.getRow() + knightDirections[i][0];
+                int x = myPosition.getColumn() + knightDirections[i][1];
+                if (x <= 8 && x >= 1 && y <= 8 && y >= 1)
+                {
+                    ChessPiece piece2 = board.getPiece(new ChessPosition(y,x));
+
+                    if (piece2 != null)
+                    {
+                        if (piece2.getTeamColor() != myColor)
+                        {
+                            myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                        }
+                    }
+                    else
+                    {
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                    }
+                }
+            }
+        }
+
+        if (myType == PieceType.PAWN)
+        {
+            int[][] pawnDirections;
+            if (myColor == ChessGame.TeamColor.WHITE)
+            {
+                pawnDirections = new int[][] { {1,0},{2,0},{1,1},{1,-1} };
+            }
+            else
+            {
+                pawnDirections = new int[][] { {-1,0},{-2,0},{-1,1},{-1,-1} };
+            }
+
+            boolean moveTwoBlocked = false;
+            for (int i = 0; i < pawnDirections.length; i++)
+            {
+                if (i == 1 && (moveTwoBlocked ||
+                        (myColor == ChessGame.TeamColor.WHITE && myPosition.getRow() != 2) ||
+                        (myColor == ChessGame.TeamColor.BLACK && myPosition.getRow() != 7)))
+                {
+                    continue;
+                }
+
+                int y = myPosition.getRow() + pawnDirections[i][0];
+                int x = myPosition.getColumn() + pawnDirections[i][1];
+                if (x <= 8 && x >= 1 && y <= 8 && y >= 1)
+                {
+                    ChessPiece piece2 = board.getPiece(new ChessPosition(y,x));
+                    if (i < 2)
+                    {
+                        if (piece2 != null)
+                        {
+                            if (i == 0)
+                            {
+                                moveTwoBlocked = true;
+                            }
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (piece2 != null)
+                        {
+                            if (piece2.getTeamColor() == myColor)
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+
+
+                    if ((myColor == ChessGame.TeamColor.WHITE && y == 8) ||
+                        (myColor == ChessGame.TeamColor.BLACK && y == 1))
+                    {
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),PieceType.BISHOP));
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),PieceType.KNIGHT));
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),PieceType.QUEEN));
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),PieceType.ROOK));
+                    }
+                    else
+                    {
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                    }
+                }
+            }
+        }
+
+        if (myType == PieceType.QUEEN)
+        {
+            int[][] queenDirections = { {1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1} };
+            for (int i = 0; i < queenDirections.length; i++)
+            {
+                int y = myPosition.getRow() + queenDirections[i][0];
+                int x = myPosition.getColumn() + queenDirections[i][1];
+                while (x <= 8 && x >= 1 && y <= 8 && y >= 1)
+                {
+                    ChessPiece piece2 = board.getPiece(new ChessPosition(y,x));
+
+                    if (piece2 != null)
+                    {
+                        if (piece2.getTeamColor() != myColor)
+                        {
+                            myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                    }
+                    y += queenDirections[i][0];
+                    x += queenDirections[i][1];
+                }
+            }
+        }
+
+        if (myType == PieceType.ROOK)
+        {
+            int[][] rookDirections = { {1,0},{-1,0},{0,1},{0,-1} };
+            for (int i = 0; i < rookDirections.length; i++)
+            {
+                int y = myPosition.getRow() + rookDirections[i][0];
+                int x = myPosition.getColumn() + rookDirections[i][1];
+                while (x <= 8 && x >= 1 && y <= 8 && y >= 1)
+                {
+                    ChessPiece piece2 = board.getPiece(new ChessPosition(y,x));
+
+                    if (piece2 != null)
+                    {
+                        if (piece2.getTeamColor() != myColor)
+                        {
+                            myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        myMoves.add(new ChessMove(myPosition, new ChessPosition(y,x),null));
+                    }
+                    y += rookDirections[i][0];
+                    x += rookDirections[i][1];
+                }
+            }
+        }
+
+        return myMoves;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return m_color == that.m_color && m_type == that.m_type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_color, m_type);
     }
 }
