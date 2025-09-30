@@ -210,20 +210,18 @@ public class ChessGame {
             {
                 pawnDirections = new int[][] { {-1,1},{-1,-1} };
             }
-            for (int i = 0; i < pawnDirections.length; i++)
-            {
-                int y = startPosition.getRow() + pawnDirections[i][0];
-                int x = startPosition.getColumn() + pawnDirections[i][1];
+            for (int[] pawnDirection : pawnDirections) {
+                int y = startPosition.getRow() + pawnDirection[0];
+                int x = startPosition.getColumn() + pawnDirection[1];
                 if (x <= 8 && x >= 1 && y <= 8 && y >= 1) {
 
-                    ChessPosition enPassantPos = new ChessPosition(y - pawnDirections[i][0], x);
-                    ChessPiece enemyPiece = m_board.getPiece(new ChessPosition(y,x));
-                    ChessMove enPassantCapture = new ChessMove(startPosition, new ChessPosition(y,x), null);
+                    ChessPosition enPassantPos = new ChessPosition(y - pawnDirection[0], x);
+                    ChessPiece enemyPiece = m_board.getPiece(new ChessPosition(y, x));
+                    ChessMove enPassantCapture = new ChessMove(startPosition, new ChessPosition(y, x), null);
 
                     if ((enemyPiece == null || enemyPiece.getTeamColor() == myPiece.getTeamColor()) &&
-                         myMoves.contains(enPassantCapture) &&
-                         !enPassantPos.equals(m_enPassantPos))
-                    {
+                            myMoves.contains(enPassantCapture) &&
+                            !enPassantPos.equals(m_enPassantPos)) {
                         myMoves.remove(enPassantCapture);
                     }
                 }

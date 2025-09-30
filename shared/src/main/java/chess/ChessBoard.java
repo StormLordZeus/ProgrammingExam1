@@ -87,7 +87,7 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        String myBoard = "|";
+        StringBuilder myBoard = new StringBuilder("|");
         for (int y = 8; y > 0; y--)
         {
             for (int x = 1; x < 9; x++)
@@ -95,35 +95,35 @@ public class ChessBoard {
                 ChessPiece myPiece = getPiece(new ChessPosition(y,x));
                 if (myPiece == null)
                 {
-                    myBoard += " ";
+                    myBoard.append(" ");
                 }
                 else if (myPiece.getTeamColor() == ChessGame.TeamColor.WHITE)
                 {
                     switch (myPiece.getPieceType()) {
-                        case KING -> myBoard += "K";
-                        case PAWN -> myBoard += "P";
-                        case ROOK -> myBoard += "R";
-                        case QUEEN -> myBoard += "Q";
-                        case BISHOP -> myBoard += "B";
-                        case KNIGHT -> myBoard += "N";
+                        case KING -> myBoard.append("K");
+                        case PAWN -> myBoard.append("P");
+                        case ROOK -> myBoard.append("R");
+                        case QUEEN -> myBoard.append("Q");
+                        case BISHOP -> myBoard.append("B");
+                        case KNIGHT -> myBoard.append("N");
                     }
                 }
                 else
                 {
                     switch (myPiece.getPieceType()) {
-                        case KING -> myBoard += "k";
-                        case PAWN -> myBoard += "p";
-                        case ROOK -> myBoard += "r";
-                        case QUEEN -> myBoard += "q";
-                        case BISHOP -> myBoard += "b";
-                        case KNIGHT -> myBoard += "n";
+                        case KING -> myBoard.append("k");
+                        case PAWN -> myBoard.append("p");
+                        case ROOK -> myBoard.append("r");
+                        case QUEEN -> myBoard.append("q");
+                        case BISHOP -> myBoard.append("b");
+                        case KNIGHT -> myBoard.append("n");
                     }
                 }
 
-                myBoard += "|";
+                myBoard.append("|");
             }
-            myBoard += "\n|";
+            myBoard.append("\n|");
         }
-        return myBoard;
+        return myBoard.toString();
     }
 }
