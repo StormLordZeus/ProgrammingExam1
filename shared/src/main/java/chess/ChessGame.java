@@ -1,5 +1,6 @@
 package chess;
 
+import javax.swing.*;
 import java.util.*;
 
 /**
@@ -95,6 +96,101 @@ public class ChessGame {
             return null;
         }
         Collection<ChessMove> myMoves = myPiece.pieceMoves(m_board, startPosition);
+        if (myPiece.getPieceType() == ChessPiece.PieceType.KING)
+        {
+            int x = startPosition.getColumn();
+            int y = startPosition.getRow();
+            if (myPiece.getTeamColor() == TeamColor.WHITE)
+            {
+                ChessPosition castleLeft = new ChessPosition(y, x-2);
+                ChessPosition castleRight = new ChessPosition(y, x+2);
+
+                ChessMove castle = new ChessMove(startPosition, castleLeft, null);
+                if (myMoves.contains(castle))
+                {
+                    if (!m_whiteCastleLeft)
+                    {
+                        myMoves.remove(castle);
+                    }
+                    else
+                    {
+                        m_board.addPiece(new ChessPosition(y,x-1), myPiece);
+                        m_board.addPiece(startPosition, null);
+                        if(isInCheck(myPiece.getTeamColor()))
+                        {
+                            myMoves.remove(castle);
+                        }
+                        m_board.addPiece(new ChessPosition(y,x-1), null);
+                        m_board.addPiece(startPosition, myPiece);
+                    }
+                }
+
+                castle = new ChessMove(startPosition, castleRight, null);
+                if (myMoves.contains(castle))
+                {
+                    if (!m_whiteCastleRight)
+                    {
+                        myMoves.remove(castle);
+                    }
+                    else
+                    {
+                        m_board.addPiece(new ChessPosition(y,x+1), myPiece);
+                        m_board.addPiece(startPosition, null);
+                        if(isInCheck(myPiece.getTeamColor()))
+                        {
+                            myMoves.remove(castle);
+                        }
+                        m_board.addPiece(new ChessPosition(y,x+1), null);
+                        m_board.addPiece(startPosition, myPiece);
+                    }
+                }
+            }
+            else
+            {
+                ChessPosition castleLeft = new ChessPosition(y, x-2);
+                ChessPosition castleRight = new ChessPosition(y, x+2);
+
+                ChessMove castle = new ChessMove(startPosition, castleLeft, null);
+                if (myMoves.contains(castle))
+                {
+                    if (!m_blackCastleLeft)
+                    {
+                        myMoves.remove(castle);
+                    }
+                    else
+                    {
+                        m_board.addPiece(new ChessPosition(y,x-1), myPiece);
+                        m_board.addPiece(startPosition, null);
+                        if(isInCheck(myPiece.getTeamColor()))
+                        {
+                            myMoves.remove(castle);
+                        }
+                        m_board.addPiece(new ChessPosition(y,x-1), null);
+                        m_board.addPiece(startPosition, myPiece);
+                    }
+                }
+
+                castle = new ChessMove(startPosition, castleRight, null);
+                if (myMoves.contains(castle))
+                {
+                    if (!m_blackCastleRight)
+                    {
+                        myMoves.remove(castle);
+                    }
+                    else
+                    {
+                        m_board.addPiece(new ChessPosition(y,x+1), myPiece);
+                        m_board.addPiece(startPosition, null);
+                        if(isInCheck(myPiece.getTeamColor()))
+                        {
+                            myMoves.remove(castle);
+                        }
+                        m_board.addPiece(new ChessPosition(y,x+1), null);
+                        m_board.addPiece(startPosition, myPiece);
+                    }
+                }
+            }
+        }
         Iterator<ChessMove> movesIterator = myMoves.iterator();
         while (movesIterator.hasNext())
         {
@@ -125,20 +221,83 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException
     {
         ChessPosition start_pos = move.getStartPosition();
+        ChessPosition end_pos = move.getEndPosition();
         ChessPiece myPiece = m_board.getPiece(start_pos);
         if (myPiece != null)
         {
             TeamColor myColor = myPiece.getTeamColor();
             if (this.validMoves(start_pos).contains(move) && myColor == m_teamTurn) {
+                if (myPiece.getPieceType() == ChessPiece.PieceType.KING)
+                {
+                    int start_col = start_pos.getColumn();
+                    int end_col = end_pos.getColumn();
+                    if (Math.abs(start_col - end_col) == 2)
+                    {
+                        if (end_col > start_col)
+                        {
+                            if (m_teamTurn == TeamColor.WHITE)
+                            {
+                                m_board.addPiece(new ChessPosition(1,6), new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                            }
+                            else
+                            {
+                                m_board.addPiece(new ChessPosition(8,6), new ChessPiece(TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+                            }
+                        }
+                        else
+                        {
+                            if (m_teamTurn == TeamColor.WHITE)
+                            {
+                                m_board.addPiece(new ChessPosition(1,4), new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                            }
+                            else
+                            {
+                                m_board.addPiece(new ChessPosition(8,4), new ChessPiece(TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+                            }
+                        }
+                    }
+                    if (m_teamTurn == TeamColor.WHITE)
+                    {
+                        m_whiteCastleLeft = false;
+                        m_whiteCastleRight = false;
+                    }
+                    else
+                    {
+                        m_blackCastleLeft = false;
+                        m_blackCastleRight = false;
+                    }
+                }
+                else if (myPiece.getPieceType() == ChessPiece.PieceType.ROOK)
+                {
+                    if (start_pos.getRow() == 1 && start_pos.getColumn() == 1)
+                    {
+                        m_whiteCastleLeft = false;
+                    }
+                    else if (start_pos.getRow() == 1 && start_pos.getColumn() == 8)
+                    {
+                        m_whiteCastleRight = false;
+                    }
+                    else if (start_pos.getRow() == 8 && start_pos.getColumn() == 1)
+                    {
+                        m_blackCastleLeft = false;
+                    }
+                    else if (start_pos.getRow() == 8 && start_pos.getColumn() == 8)
+                    {
+                        m_blackCastleRight = false;
+                    }
+                }
+
                 if (move.getPromotionPiece() != null)
                 {
-                    m_board.addPiece(move.getEndPosition(), new ChessPiece(myColor, move.getPromotionPiece()));
+                    m_board.addPiece(end_pos, new ChessPiece(myColor, move.getPromotionPiece()));
                 }
                 else
                 {
-                    m_board.addPiece(move.getEndPosition(), myPiece);
+                    m_board.addPiece(end_pos, myPiece);
                 }
                 m_board.addPiece(start_pos, null);
+
+
                 if (m_teamTurn == TeamColor.WHITE)
                 {
                     m_teamTurn = TeamColor.BLACK;
