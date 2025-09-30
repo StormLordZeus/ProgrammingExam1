@@ -249,7 +249,34 @@ public class ChessPiece {
                         }
                         else
                         {
-                            continue;
+                            if (myColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 5)
+                            {
+                                ChessPiece enemyPiece = board.getPiece(new ChessPosition(y-1,x));
+                                if (enemyPiece == null)
+                                {
+                                    continue;
+                                }
+                                if (enemyPiece.getPieceType() != PieceType.PAWN)
+                                {
+                                    continue;
+                                }
+                            }
+                            else if (myColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 4)
+                            {
+                                ChessPiece enemyPiece = board.getPiece(new ChessPosition(y+1,x));
+                                if (enemyPiece == null)
+                                {
+                                    continue;
+                                }
+                                if (enemyPiece.getPieceType() != PieceType.PAWN)
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
                     }
 

@@ -90,7 +90,7 @@ public class ChessBoard {
         String myBoard = "|";
         for (int y = 8; y > 0; y--)
         {
-            for (int x = 8; x > 0; x--)
+            for (int x = 1; x < 9; x++)
             {
                 ChessPiece myPiece = getPiece(new ChessPosition(y,x));
                 if (myPiece == null)
@@ -122,7 +122,7 @@ public class ChessBoard {
 
                 myBoard += "|";
             }
-            myBoard += "\n";
+            myBoard += "\n|";
         }
         return myBoard;
     }

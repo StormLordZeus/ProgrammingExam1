@@ -17,6 +17,7 @@ public class ChessGame {
     private boolean m_blackCastleRight;
     private boolean m_whiteCastleLeft;
     private boolean m_whiteCastleRight;
+    private ChessPosition m_enPassantPos;
 
     public ChessGame() {
         m_teamTurn = TeamColor.WHITE;
@@ -26,6 +27,7 @@ public class ChessGame {
         m_blackCastleRight = true;
         m_whiteCastleLeft = true;
         m_whiteCastleRight = true;
+        m_enPassantPos = null;
     }
 
     /**
@@ -197,6 +199,40 @@ public class ChessGame {
             }
             System.out.println(myMoves);
         }
+        else if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN)
+        {
+            int[][] pawnDirections;
+            if (myPiece.getTeamColor() == ChessGame.TeamColor.WHITE)
+            {
+                pawnDirections = new int[][] { {1,1},{1,-1} };
+            }
+            else
+            {
+                pawnDirections = new int[][] { {-1,1},{-1,-1} };
+            }
+            for (int i = 0; i < pawnDirections.length; i++)
+            {
+                int y = startPosition.getRow() + pawnDirections[i][0];
+                int x = startPosition.getColumn() + pawnDirections[i][1];
+                if (x <= 8 && x >= 1 && y <= 8 && y >= 1) {
+
+                    ChessPosition enPassantPos = new ChessPosition(y - pawnDirections[i][0], x);
+                    ChessPiece enemyPiece = m_board.getPiece(new ChessPosition(y,x));
+                    ChessMove enPassant = new ChessMove(startPosition, enPassantPos, null);
+                    ChessMove enPassantCapture = new ChessMove(startPosition, new ChessPosition(y,x), null);
+
+                    if ((enemyPiece == null || enemyPiece.getTeamColor() == myPiece.getTeamColor()) &&
+                         myMoves.contains(enPassantCapture) &&
+                         !enPassantPos.equals(m_enPassantPos))
+                    {
+                        myMoves.remove(enPassantCapture);
+                    }
+                }
+            }
+
+        }
+
+
         Iterator<ChessMove> movesIterator = myMoves.iterator();
         while (movesIterator.hasNext())
         {
@@ -235,6 +271,8 @@ public class ChessGame {
             if (this.validMoves(start_pos).contains(move) && myColor == m_teamTurn) {
                 if (myPiece.getPieceType() == ChessPiece.PieceType.KING)
                 {
+                    m_enPassantPos = null;
+
                     int start_col = start_pos.getColumn();
                     int end_col = end_pos.getColumn();
                     if (Math.abs(start_col - end_col) == 2)
@@ -279,6 +317,8 @@ public class ChessGame {
                 }
                 else if (myPiece.getPieceType() == ChessPiece.PieceType.ROOK)
                 {
+                    m_enPassantPos = null;
+
                     if (start_pos.getRow() == 1 && start_pos.getColumn() == 1)
                     {
                         m_whiteCastleLeft = false;
@@ -296,6 +336,35 @@ public class ChessGame {
                         m_blackCastleRight = false;
                     }
                 }
+                else if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN)
+                {
+                    if (Math.abs(start_pos.getRow() - end_pos.getRow()) == 2)
+                    {
+                        m_enPassantPos = end_pos;
+                    }
+                    else if (m_enPassantPos != null)
+                    {
+                        ChessPosition enPassantCapture;
+                        if (myColor == TeamColor.WHITE)
+                        {
+                            enPassantCapture = new ChessPosition(m_enPassantPos.getRow()+1, m_enPassantPos.getColumn());
+                        }
+                        else
+                        {
+                            enPassantCapture = new ChessPosition(m_enPassantPos.getRow()-1, m_enPassantPos.getColumn());
+                        }
+                        if (enPassantCapture.equals(end_pos))
+                        {
+                            m_board.addPiece(m_enPassantPos, null);
+                        }
+                        m_enPassantPos = null;
+                    }
+                }
+                else
+                {
+                    m_enPassantPos = null;
+                }
+
 
                 if (move.getPromotionPiece() != null)
                 {
