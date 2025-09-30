@@ -84,4 +84,46 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
+
+    @Override
+    public String toString() {
+        String myBoard = "|";
+        for (int y = 8; y > 0; y--)
+        {
+            for (int x = 8; x > 0; x--)
+            {
+                ChessPiece myPiece = getPiece(new ChessPosition(y,x));
+                if (myPiece == null)
+                {
+                    myBoard += " ";
+                }
+                else if (myPiece.getTeamColor() == ChessGame.TeamColor.WHITE)
+                {
+                    switch (myPiece.getPieceType()) {
+                        case KING -> myBoard += "K";
+                        case PAWN -> myBoard += "P";
+                        case ROOK -> myBoard += "R";
+                        case QUEEN -> myBoard += "Q";
+                        case BISHOP -> myBoard += "B";
+                        case KNIGHT -> myBoard += "N";
+                    }
+                }
+                else
+                {
+                    switch (myPiece.getPieceType()) {
+                        case KING -> myBoard += "k";
+                        case PAWN -> myBoard += "p";
+                        case ROOK -> myBoard += "r";
+                        case QUEEN -> myBoard += "q";
+                        case BISHOP -> myBoard += "b";
+                        case KNIGHT -> myBoard += "n";
+                    }
+                }
+
+                myBoard += "|";
+            }
+            myBoard += "\n";
+        }
+        return myBoard;
+    }
 }

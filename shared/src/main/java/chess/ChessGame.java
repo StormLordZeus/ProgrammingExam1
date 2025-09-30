@@ -22,6 +22,10 @@ public class ChessGame {
         m_teamTurn = TeamColor.WHITE;
         m_board = new ChessBoard();
         m_board.resetBoard();
+        m_blackCastleLeft = true;
+        m_blackCastleRight = true;
+        m_whiteCastleLeft = true;
+        m_whiteCastleRight = true;
     }
 
     /**
@@ -98,6 +102,7 @@ public class ChessGame {
         Collection<ChessMove> myMoves = myPiece.pieceMoves(m_board, startPosition);
         if (myPiece.getPieceType() == ChessPiece.PieceType.KING)
         {
+            System.out.println(myMoves);
             int x = startPosition.getColumn();
             int y = startPosition.getRow();
             if (myPiece.getTeamColor() == TeamColor.WHITE)
@@ -108,7 +113,7 @@ public class ChessGame {
                 ChessMove castle = new ChessMove(startPosition, castleLeft, null);
                 if (myMoves.contains(castle))
                 {
-                    if (!m_whiteCastleLeft)
+                    if (!m_whiteCastleLeft || isInCheck(TeamColor.WHITE))
                     {
                         myMoves.remove(castle);
                     }
@@ -128,7 +133,7 @@ public class ChessGame {
                 castle = new ChessMove(startPosition, castleRight, null);
                 if (myMoves.contains(castle))
                 {
-                    if (!m_whiteCastleRight)
+                    if (!m_whiteCastleRight || isInCheck(TeamColor.WHITE))
                     {
                         myMoves.remove(castle);
                     }
@@ -153,7 +158,7 @@ public class ChessGame {
                 ChessMove castle = new ChessMove(startPosition, castleLeft, null);
                 if (myMoves.contains(castle))
                 {
-                    if (!m_blackCastleLeft)
+                    if (!m_blackCastleLeft || isInCheck(TeamColor.BLACK))
                     {
                         myMoves.remove(castle);
                     }
@@ -173,7 +178,7 @@ public class ChessGame {
                 castle = new ChessMove(startPosition, castleRight, null);
                 if (myMoves.contains(castle))
                 {
-                    if (!m_blackCastleRight)
+                    if (!m_blackCastleRight || isInCheck(TeamColor.BLACK))
                     {
                         myMoves.remove(castle);
                     }
@@ -190,6 +195,7 @@ public class ChessGame {
                     }
                 }
             }
+            System.out.println(myMoves);
         }
         Iterator<ChessMove> movesIterator = myMoves.iterator();
         while (movesIterator.hasNext())
@@ -238,10 +244,12 @@ public class ChessGame {
                             if (m_teamTurn == TeamColor.WHITE)
                             {
                                 m_board.addPiece(new ChessPosition(1,6), new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                                m_board.addPiece(new ChessPosition(1,8), null);
                             }
                             else
                             {
                                 m_board.addPiece(new ChessPosition(8,6), new ChessPiece(TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+                                m_board.addPiece(new ChessPosition(8,8), null);
                             }
                         }
                         else
@@ -249,10 +257,12 @@ public class ChessGame {
                             if (m_teamTurn == TeamColor.WHITE)
                             {
                                 m_board.addPiece(new ChessPosition(1,4), new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                                m_board.addPiece(new ChessPosition(1,1), null);
                             }
                             else
                             {
                                 m_board.addPiece(new ChessPosition(8,4), new ChessPiece(TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+                                m_board.addPiece(new ChessPosition(8,1), null);
                             }
                         }
                     }
@@ -306,7 +316,9 @@ public class ChessGame {
                 {
                     m_teamTurn = TeamColor.WHITE;
                 }
-            } else {
+                System.out.println("The final board is: \n" + m_board);
+            }
+            else {
                 throw new InvalidMoveException();
             }
         }
