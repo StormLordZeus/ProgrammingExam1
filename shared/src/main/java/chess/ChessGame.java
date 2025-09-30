@@ -218,7 +218,6 @@ public class ChessGame {
 
                     ChessPosition enPassantPos = new ChessPosition(y - pawnDirections[i][0], x);
                     ChessPiece enemyPiece = m_board.getPiece(new ChessPosition(y,x));
-                    ChessMove enPassant = new ChessMove(startPosition, enPassantPos, null);
                     ChessMove enPassantCapture = new ChessMove(startPosition, new ChessPosition(y,x), null);
 
                     if ((enemyPiece == null || enemyPiece.getTeamColor() == myPiece.getTeamColor()) &&
